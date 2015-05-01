@@ -1,3 +1,6 @@
+This project for products which used Hisi351x series chips. It's based on
+Buildroot-2015.02.
+
 To build and use the buildroot stuff, do the following:
 
 1) run 'make menuconfig'
