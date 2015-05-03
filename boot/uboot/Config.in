@@ -135,6 +135,13 @@ config BR2_TARGET_UBOOT_FORMAT_CUSTOM_NAME
 	  U-Boot, if it is not one of the default names. For example:
 	  u-boot_magic.bin
 
+config BR2_TARGET_UBOOT_REG_INFO_FILE
+	depends on BR2_TARGET_UBOOT_FORMAT_BIN
+	bool "Insert reg info file to U-Boot (Hisi351x)"
+	help
+	  Insert the register information file related with chip to
+	  u-boot.bin.
+
 config BR2_TARGET_UBOOT_OMAP_IFT
 	depends on BR2_TARGET_UBOOT_FORMAT_BIN
 	depends on BR2_arm || BR2_armeb

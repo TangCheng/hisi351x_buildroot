@@ -56,6 +56,10 @@ UBOOT_BIN = u-boot.bin
 UBOOT_BIN_IFT = $(UBOOT_BIN).ift
 endif
 
+ifeq ($(BR2_TARGET_UBOOT_REG_INFO_FILE),y)
+UBOOT_REG_INFO = reg_info_$(UBOOT_BOARD_NAME).bin
+endif
+
 UBOOT_ARCH = $(KERNEL_ARCH)
 
 UBOOT_MAKE_OPTS += \
@@ -125,6 +129,15 @@ endef
 
 define UBOOT_INSTALL_IMAGES_CMDS
 	cp -dpf $(@D)/$(UBOOT_BIN) $(BINARIES_DIR)/
+	$(if $(BR2_TARGET_UBOOT_REG_INFO_FILE),
+		if [ -n "$(UBOOT_REG_INFO)" ] && [ -f $(@D)/$(UBOOT_REG_INFO) ] ; then \
+			dd if=$(BINARIES_DIR)/u-boot.bin of=$(BINARIES_DIR)/fb1 bs=1 count=64; \
+			dd if=$(@D)/$(UBOOT_REG_INFO) of=$(BINARIES_DIR)/fb2 bs=4096 conv=sync; \
+			dd if=$(BINARIES_DIR)/u-boot.bin of=$(BINARIES_DIR)/fb3 bs=1 skip=4160; \
+			rm -f $(BINARIES_DIR)/u-boot.bin; \
+			cat $(BINARIES_DIR)/fb1 $(BINARIES_DIR)/fb2 $(BINARIES_DIR)/fb3 > $(BINARIES_DIR)/u-boot.bin; \
+			rm -f $(BINARIES_DIR)/fb1 $(BINARIES_DIR)/fb2 $(BINARIES_DIR)/fb3; \
+		fi)
 	$(if $(BR2_TARGET_UBOOT_SPL),
 		cp -dpf $(@D)/$(call qstrip,$(BR2_TARGET_UBOOT_SPL_NAME)) $(BINARIES_DIR)/)
 	$(if $(BR2_TARGET_UBOOT_ENVIMAGE),
